@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Numerics;
 using System.Security.Cryptography;
+using System.Diagnostics;
 
 namespace Cryptography_101
 {
@@ -42,6 +43,11 @@ namespace Cryptography_101
             BigInteger temp;
             Random rand = new Random();
             bool flag = false;
+            int n = 0;
+
+            Stopwatch sw = new Stopwatch();
+
+            sw.Start();
 
             do
             {
@@ -54,8 +60,11 @@ namespace Cryptography_101
 
                 if (Math_Helper.isPrimeMillerRabin(temp, 100) == true)
                     flag = true;
-
+                n++;
             } while (flag == false);
+
+            sw.Stop();
+            Console.Write("Time elapsed for finding primes: {0}", sw.Elapsed);
 
             return temp;
         }

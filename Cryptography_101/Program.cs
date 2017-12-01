@@ -10,6 +10,8 @@ namespace Cryptography_101
     {
         static void Main(string[] args)
         {
+            RSA alice = new Cryptography_101.RSA();
+            Console.WriteLine("Alice is online.");
         }
     }
 }
