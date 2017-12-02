@@ -55,9 +55,10 @@ namespace Cryptography_101
             int bitLength_q = 0;
             int bitLength_p = 0;
 
-            Random rand = new Random();
-            int size_q = rand.Next(96, 192);
-            int size_p = 256 - size_q;
+            // Random rand = new Random();
+
+            int size_q = 128;
+            int size_p = 128;
             this.q = genPrimes(size_q);
             this.p = genPrimes(size_p);
 

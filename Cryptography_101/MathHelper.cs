@@ -20,7 +20,7 @@ namespace Cryptography_101
 
 
             BigInteger number = new BigInteger(numbers);
-            int iterations = 500;
+            int iterations = 400;
 
             if (primalityTest.IsPrimeMillerRabin(number, iterations)) {
                 return number;
