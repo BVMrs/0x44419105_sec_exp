@@ -64,21 +64,23 @@ namespace Cryptography_101
             BigInteger test_q = this.q;
             BigInteger test_p = this.p;
 
-            do
+            while (test_q / 2 != 0)
             {
-                bitLength_q++;
                 test_q /= 2;
-            } while (test_q != 0);
+                bitLength_q++;
+            }
+            bitLength_q += 1;
 
-            do
+            while (test_p / 2 != 0)
             {
-                bitLength_p++;
                 test_p /= 2;
-            } while (test_p != 0);
+                bitLength_p++;
+            }
+            bitLength_p += 1;
 
             sw.Stop();
 
-            Console.WriteLine("Time elapsed calculating primes: {0}", sw.Elapsed);
+            //Console.WriteLine("Time elapsed calculating primes: {0}", sw.Elapsed);
             Console.WriteLine("Size of p is " + bitLength_p + " bits. Size of q is " + bitLength_q + " bits.");
         }
 
