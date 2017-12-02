@@ -91,9 +91,10 @@ namespace Cryptography_101
             bool flag = false;
             BigInteger tmp = 0;
 
+
             while (flag == false)
             {
-                tmp = getRandom(256);
+                tmp = getRandom(64);
                 if (MathHelper.gcd_euclidean(tmp, this.phi) == 1)
                 {
                     flag = true;
@@ -130,6 +131,5 @@ namespace Cryptography_101
         {
             return BigInteger.ModPow(cryptogram, this.d, this.N);
         }
-
     }
 }
