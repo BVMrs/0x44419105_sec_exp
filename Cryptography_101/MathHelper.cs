@@ -10,6 +10,25 @@ namespace Cryptography_101
 {
     public static class MathHelper
     {
+        static private Random rand = new Random(DateTime.Now.Millisecond);
+
+        public static BigInteger GenerateLargePrime(int length)
+        {
+            PrimalityTest primalityTest = new PrimalityTest();
+            byte[] numbers = new byte[length];
+            rand.NextBytes(numbers);
+
+
+            BigInteger number = new BigInteger(numbers);
+            int iterations = 500;
+
+            if (primalityTest.IsPrimeMillerRabin(number, iterations)) {
+                return number;
+            } else {
+                return GenerateLargePrime(length);
+            }
+        }
+
         /**
          * Find the greatest common divisor by the euclidean algoritm
          */
