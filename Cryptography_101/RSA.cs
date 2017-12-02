@@ -57,7 +57,7 @@ namespace Cryptography_101
 
             Random rand = new Random();
             int size_q = rand.Next(128, 384);
-            int size_p = (size_q > 256) ? (size_q - 256) : (256 - size_q);
+            int size_p = (size_q >= 256) ? (size_q - 256) : (256 - size_q);
             this.q = genPrimes(size_q);
             this.p = genPrimes(size_p);
 
