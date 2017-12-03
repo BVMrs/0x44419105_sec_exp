@@ -18,12 +18,19 @@ namespace Cryptography_101
         *  shall be kept secret
         */
 
-        private BigInteger N;
         private BigInteger phi;
+
+        // Public Key
+        private BigInteger N;
         private BigInteger e;
+        private PublicKey pubKey;
+
+        // Private Key
         private BigInteger d;
         private BigInteger p;
         private BigInteger q;
+        private PrivateKey priKey;
+
 
         public RSA()
         {
@@ -42,7 +49,7 @@ namespace Cryptography_101
         {
             // we want the key to be equal to 2048 bits 
             // (as only RSA786 was cracked yet)
-    
+
             return MathHelper.GenerateLargePrime(size);
         }
 
@@ -59,11 +66,12 @@ namespace Cryptography_101
 
             int size_q = 128;
             int size_p = 128;
-            this.q = genPrimes(size_q);
-            this.p = genPrimes(size_p);
+            
+            this.priKey.Q = genPrimes(size_q); 
+            this.priKey.P = genPrimes(size_p);
 
-            BigInteger test_q = this.q;
-            BigInteger test_p = this.p;
+            BigInteger test_q = this.priKey.Q;
+            BigInteger test_p = this.priKey.P;
 
             while (test_q / 2 != 0)
             {
@@ -94,15 +102,15 @@ namespace Cryptography_101
 
             while (flag == false)
             {
-                tmp = getRandom(64);
+                tmp = getRandom(192);
                 if (MathHelper.gcd_euclidean(tmp, this.phi) == 1)
                 {
                     flag = true;
                 }
             }
 
-            this.e = tmp;
-            this.d = MathHelper.findInverse(this.e, this.phi);
+            this.pubKey.E = tmp;
+            this.priKey.D = MathHelper.findInverse(this.pubKey.E, this.phi);
         }
 
         private BigInteger getRandom(int length)
@@ -119,17 +127,36 @@ namespace Cryptography_101
         {
             BigInteger tmp;
 
-            if (message > this.N)
+            if (message > this.pubKey.N)
                 return -1;
 
-            tmp = BigInteger.ModPow(message, this.e, this.N);
+            tmp = BigInteger.ModPow(message, this.pubKey.E, this.pubKey.N);
 
             return tmp;
         }
 
         public BigInteger decrypt(BigInteger cryptogram)
         {
-            return BigInteger.ModPow(cryptogram, this.d, this.N);
+            return BigInteger.ModPow(cryptogram, this.priKey.D, this.pubKey.N);
+        }
+
+        public BigInteger sign(BigInteger message)
+        {
+            return BigInteger.ModPow((BigInteger
+                .Parse(MathHelper
+                .GetHashString(message
+                    .ToString()
+                ))), this.priKey.D, this.pubKey.N);
+        }
+
+        public bool verify_sign(BigInteger signature, BigInteger cryptogram, BigInteger public_key_e, BigInteger private_key_d, BigInteger modulo)
+        {
+            return BigInteger.ModPow((BigInteger
+                .Parse(MathHelper
+                .GetHashString(signature
+                    .ToString()
+                ))), public_key_e, modulo) == 
+                BigInteger.Parse(MathHelper.GetHashString(cryptogram.ToString()));
         }
     }
 }

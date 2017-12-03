@@ -12,13 +12,27 @@ namespace Cryptography_101
     {
         static private Random rand = new Random(DateTime.Now.Millisecond);
 
+        public static byte[] GetHash(string inputString)
+        {
+            HashAlgorithm alg = SHA256.Create();
+            return alg.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+        }
+
+        public static string GetHashString(string inputString)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in GetHash(inputString))
+                sb.Append(b.ToString("X2"));
+
+            return sb.ToString();
+        }
+
         public static BigInteger GenerateLargePrime(int length)
         {
             PrimalityTest primalityTest = new PrimalityTest();
             byte[] numbers = new byte[length];
             rand.NextBytes(numbers);
-
-
+            
             BigInteger number = new BigInteger(numbers);
             int iterations = 400;
 
