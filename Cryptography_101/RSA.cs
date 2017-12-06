@@ -23,14 +23,24 @@ namespace Cryptography_101
         // Public Key
         private BigInteger N;
         private BigInteger e;
-        private PublicKey pubKey;
+        private PublicKey pubKey = new PublicKey();
 
         // Private Key
         private BigInteger d;
         private BigInteger p;
         private BigInteger q;
-        private PrivateKey priKey;
+        private PrivateKey priKey = new PrivateKey();
 
+        internal PublicKey PubKey
+        {
+            get {
+                return pubKey;
+            }
+
+            set {
+                this.pubKey = value;
+            }
+        }
 
         public RSA()
         {
@@ -41,8 +51,8 @@ namespace Cryptography_101
 
         void calcInt()
         {
-            this.N = this.p * this.q;
-            this.phi = (this.q - 1) * (this.p - 1);
+            pubKey.N = this.priKey.P * this.priKey.Q;
+            this.phi = (this.priKey.P - 1) * (this.priKey.Q - 1);
         }
 
         private BigInteger genPrimes(int size)
@@ -109,8 +119,8 @@ namespace Cryptography_101
                 }
             }
 
-            this.pubKey.E = tmp;
-            this.priKey.D = MathHelper.findInverse(this.pubKey.E, this.phi);
+            pubKey.E = tmp;
+            priKey.D = MathHelper.findInverse(this.pubKey.E, this.phi);
         }
 
         private BigInteger getRandom(int length)
@@ -149,7 +159,7 @@ namespace Cryptography_101
                 ))), this.priKey.D, this.pubKey.N);
         }
 
-        public bool verify_sign(BigInteger signature, BigInteger cryptogram, BigInteger public_key_e, BigInteger private_key_d, BigInteger modulo)
+        public bool verify_sign(BigInteger signature, BigInteger cryptogram, BigInteger public_key_e, BigInteger modulo)
         {
             return BigInteger.ModPow((BigInteger
                 .Parse(MathHelper

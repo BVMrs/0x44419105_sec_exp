@@ -18,6 +18,10 @@ namespace Cryptography_101
             this.n = n;
         }
 
+        public PublicKey()
+        {
+        }
+
         public BigInteger E
         {
             get {

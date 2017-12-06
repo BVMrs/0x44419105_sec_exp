@@ -46,8 +46,11 @@
   <ItemGroup>
     <Compile Include="PrimalityTest.cs" />
     <Compile Include="MathHelper.cs" />
+    <Compile Include="PrivateKey.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProviderRSA.cs" />
+    <Compile Include="PublicKey.cs" />
     <Compile Include="RSA.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -65,5 +65,8 @@ namespace Cryptography_101
             this.q = q;
             this.owner = owner;
         }
+        public PrivateKey()
+        {
+        }
     }
 }
