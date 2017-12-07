@@ -177,7 +177,7 @@ namespace Cryptography_101
                )), this.priKey.D, this.pubKey.N);
         }
 
-        public bool verify_sign(BigInteger signature, BigInteger cryptogram, BigInteger public_key_e, BigInteger private_key_d, BigInteger modulo)
+        public bool verify_sign(BigInteger signature, BigInteger cryptogram, BigInteger public_key_e, BigInteger private_key_d, BigInteger modulo, BigInteger orig_msg)
         {
             // This is basically a RSA encryption
             // A message decryption has to be done
@@ -186,17 +186,19 @@ namespace Cryptography_101
             BigInteger hashed_message = BigInteger.Parse(message_hash,
                 System.Globalization.NumberStyles.AllowHexSpecifier);
             Console.WriteLine("Message from cryptogram is: " + message);
+            Console.WriteLine("Message is actually: " + orig_msg);
+            Console.WriteLine("The Decryption Process is: " + message.Equals(orig_msg));
             Console.WriteLine("Message digest after decryption: " + hashed_message);
             Console.WriteLine("Message digest alt: " + message_hash);
 
             BigInteger pseudo_encryption = BigInteger.ModPow(signature, public_key_e, modulo);
             String stringif = "0" + MathHelper.GetHashString(pseudo_encryption.ToString().ToLower());
-            Console.WriteLine("Signature Hash after \"encryption\" is: " + stringif);
+            Console.WriteLine("Signature digest after \"encryption\" is: " + stringif);
             BigInteger signature_candidate = BigInteger.Parse(stringif, 
                 System.Globalization.NumberStyles.AllowHexSpecifier);
             Console.WriteLine("Signature candidate: " + signature_candidate);
 
-            return hashed_message == signature_candidate;
+            return hashed_message.Equals(signature_candidate);
         }
     }
 }

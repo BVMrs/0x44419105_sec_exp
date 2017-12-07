@@ -42,7 +42,7 @@ namespace Cryptography_101
             Console.WriteLine("Message digest is: " + MathHelper.GetHashString(msg.ToString()));
 
 
-            bool verify = alice.verify_sign(digest, cry, alice.PubKey.E, alice.PriKey.D, alice.PubKey.N);
+            bool verify = alice.verify_sign(digest, cry, alice.PubKey.E, alice.PriKey.D, alice.PubKey.N, msg);
 
             Console.WriteLine("Signature is: " + digest);
             Console.WriteLine("Signature check is: " + verify);
