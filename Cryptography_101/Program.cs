@@ -12,6 +12,11 @@ namespace Cryptography_101
     {
         static void Main(string[] args)
         {
+            BigInteger msg = BigInteger.Parse("07381132303085281035641787418335421616958461");
+            BigInteger cry = 0;
+            String stringMsg = "0" + MathHelper.GetHashString(msg.ToString()).ToLower();
+            Console.WriteLine("Digest is :" + BigInteger.Parse(stringMsg, System.Globalization.NumberStyles.AllowHexSpecifier));
+
             Console.WriteLine("---------- Commencing test session ----------");
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -19,10 +24,7 @@ namespace Cryptography_101
             sw.Stop();
             Console.WriteLine("Time elapsed creating a new RSA instance is: {0}.", sw.Elapsed);
             Console.WriteLine("---------- Test session done ----------");
-
-            BigInteger msg = BigInteger.Parse("07381132303085281035641787418335421616958461");
-            BigInteger cry = 0;
-
+            
             cry = alice.encrypt(msg);
 
             Console.WriteLine("The message is: " + msg);
@@ -32,8 +34,15 @@ namespace Cryptography_101
             Console.WriteLine("Public Key size is: " + alice.PubKey.N);
             Console.WriteLine("");
 
-            BigInteger digest = alice.sign(BigInteger.Parse(MathHelper.GetHashString(msg.ToString())));
-            bool verify = alice.verify_sign(digest, cry, alice.PubKey.E, alice.PubKey.N);
+            BigInteger digest = alice.sign(BigInteger
+                .Parse("0" + MathHelper.GetHashString(msg.ToString()), 
+                System.Globalization.NumberStyles.AllowHexSpecifier));
+
+            Console.WriteLine("Message is: " + msg);
+            Console.WriteLine("Message digest is: " + MathHelper.GetHashString(msg.ToString()));
+
+
+            bool verify = alice.verify_sign(digest, cry, alice.PubKey.E, alice.PriKey.D, alice.PubKey.N);
 
             Console.WriteLine("Signature is: " + digest);
             Console.WriteLine("Signature check is: " + verify);

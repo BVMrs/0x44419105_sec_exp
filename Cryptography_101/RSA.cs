@@ -42,6 +42,18 @@ namespace Cryptography_101
             }
         }
 
+        // This is only for debug
+        internal PrivateKey PriKey
+        {
+            get {
+                return priKey;
+            }
+
+            set {
+                this.priKey = value;
+            }
+        }
+
         public RSA()
         {
             getPrimes();
@@ -152,21 +164,39 @@ namespace Cryptography_101
 
         public BigInteger sign(BigInteger message)
         {
+            // This is basically a RSA decryption
+            //return decrypt(BigInteger.Parse("0" + MathHelper.GetHashString(message.ToString())));
+            String hash = "0" + MathHelper
+                .GetHashString(message.ToString());
+
+            Console.WriteLine("Message Hash is : " + hash);
+
             return BigInteger.ModPow((BigInteger
-                .Parse(MathHelper
-                .GetHashString(message
-                    .ToString()
-                ))), this.priKey.D, this.pubKey.N);
+                .Parse(hash, 
+                System.Globalization.NumberStyles.AllowHexSpecifier
+               )), this.priKey.D, this.pubKey.N);
         }
 
-        public bool verify_sign(BigInteger signature, BigInteger cryptogram, BigInteger public_key_e, BigInteger modulo)
+        public bool verify_sign(BigInteger signature, BigInteger cryptogram, BigInteger public_key_e, BigInteger private_key_d, BigInteger modulo)
         {
-            return BigInteger.ModPow((BigInteger
-                .Parse(MathHelper
-                .GetHashString(signature
-                    .ToString()
-                ))), public_key_e, modulo) == 
-                BigInteger.Parse(MathHelper.GetHashString(cryptogram.ToString()));
+            // This is basically a RSA encryption
+            // A message decryption has to be done
+            BigInteger message = BigInteger.ModPow(cryptogram, private_key_d, modulo);
+            String message_hash = "0" + MathHelper.GetHashString(message.ToString().ToLower());
+            BigInteger hashed_message = BigInteger.Parse(message_hash,
+                System.Globalization.NumberStyles.AllowHexSpecifier);
+            Console.WriteLine("Message from cryptogram is: " + message);
+            Console.WriteLine("Message digest after decryption: " + hashed_message);
+            Console.WriteLine("Message digest alt: " + message_hash);
+
+            BigInteger pseudo_encryption = BigInteger.ModPow(signature, public_key_e, modulo);
+            String stringif = "0" + MathHelper.GetHashString(pseudo_encryption.ToString().ToLower());
+            Console.WriteLine("Signature Hash after \"encryption\" is: " + stringif);
+            BigInteger signature_candidate = BigInteger.Parse(stringif, 
+                System.Globalization.NumberStyles.AllowHexSpecifier);
+            Console.WriteLine("Signature candidate: " + signature_candidate);
+
+            return hashed_message == signature_candidate;
         }
     }
 }

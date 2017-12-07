@@ -15,7 +15,7 @@ namespace Cryptography_101
         public static byte[] GetHash(string inputString)
         {
             HashAlgorithm alg = SHA256.Create();
-            return alg.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+            return alg.ComputeHash(Encoding.Unicode.GetBytes(inputString));
         }
 
         public static string GetHashString(string inputString)
