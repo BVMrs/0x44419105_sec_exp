@@ -17,6 +17,11 @@ namespace Cryptography_101
         private List<RSA> rsaPool;
         private string context;
 
+        public ProviderRSA(int size, string context)
+        {
+
+        }
+
         public ProviderRSA(List<RSA> rsaPool, string context)
         {
             this.rsaPool = rsaPool;

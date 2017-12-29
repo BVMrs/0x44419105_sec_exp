@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace Cryptography_101
 {
-    class PublicKey
+    public class PublicKey
     {
         private BigInteger e;
         private BigInteger n;

@@ -5,6 +5,8 @@ using System.Text;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Cryptography_101
 {
@@ -21,14 +23,9 @@ namespace Cryptography_101
         private BigInteger phi;
 
         // Public Key
-        private BigInteger N;
-        private BigInteger e;
-        private PublicKey pubKey = new PublicKey();
+        public PublicKey pubKey = new PublicKey();
 
         // Private Key
-        private BigInteger d;
-        private BigInteger p;
-        private BigInteger q;
         private PrivateKey priKey = new PrivateKey();
 
         internal PublicKey PubKey
@@ -56,14 +53,58 @@ namespace Cryptography_101
 
         public RSA()
         {
-            getPrimes();
+            //Task<BigInteger[]> [] primeTask = new Task<BigInteger[]>[8];
+            //BigInteger[] values = { 0 };
+
+            //for (int i = 0; i < primeTask.Length; i++) {
+            //    primeTask[i] = Task<BigInteger[]>.Factory.StartNew(() => this.getPrimes());
+            //}
+
+            //Console.WriteLine("Entering deadlock");
+
+            //bool flag = false;
+            //while (!flag) {
+            //    for (int i = 0; i < primeTask.Length; i++) {
+            //        if (primeTask[i].IsCompleted) {
+            //            flag = true;
+            //            values = primeTask[i].Result;
+            //            break;
+            //        }
+            //    }
+            //}
+
+            //Console.WriteLine("Leaving deadlock");
+
+            BigInteger[] primes = getPrimes();
+
+            this.PriKey.Q = primes[0];
+            this.PriKey.P = primes[1];
+
             calcInt();
             genKeys();
+        }
+
+        public RSA(PublicKey puk, PrivateKey pk) {
+            this.PubKey = puk;
+            this.PriKey = pk;
         }
 
         void calcInt()
         {
             pubKey.N = this.priKey.P * this.priKey.Q;
+
+            BigInteger test_N = pubKey.N;
+            BigInteger bitLength_N = new BigInteger(0);
+
+            while (test_N / 2 != 0)
+            {
+                test_N /= 2;
+                bitLength_N++;
+            }
+            bitLength_N += 1;
+            
+            Console.WriteLine("Size of N is {0}", bitLength_N);
+            
             this.phi = (this.priKey.P - 1) * (this.priKey.Q - 1);
         }
 
@@ -75,25 +116,24 @@ namespace Cryptography_101
             return MathHelper.GenerateLargePrime(size);
         }
 
-        private void getPrimes()
+        private BigInteger[] getPrimes()
         {
-            Stopwatch sw = new Stopwatch();
-
-            sw.Start();
-
+            // Random rand = new Random();
             int bitLength_q = 0;
             int bitLength_p = 0;
 
-            // Random rand = new Random();
+            int size_q = 130;
+            int size_p = 127;
 
-            int size_q = 128;
-            int size_p = 128;
-            
-            this.priKey.Q = genPrimes(size_q); 
-            this.priKey.P = genPrimes(size_p);
+            BigInteger some_q; ;
+            BigInteger test_q;
+            BigInteger some_p;
+            BigInteger test_p;
 
-            BigInteger test_q = this.priKey.Q;
-            BigInteger test_p = this.priKey.P;
+            some_q = genPrimes(size_q);
+            test_q = some_q;
+            some_p = genPrimes(size_p);
+            test_p = some_p;
 
             while (test_q / 2 != 0)
             {
@@ -109,10 +149,49 @@ namespace Cryptography_101
             }
             bitLength_p += 1;
 
-            sw.Stop();
+            Console.WriteLine("Q size is {0}. P size is {1}.", bitLength_q, bitLength_p);
 
-            //Console.WriteLine("Time elapsed calculating primes: {0}", sw.Elapsed);
-            Console.WriteLine("Size of p is " + bitLength_p + " bits. Size of q is " + bitLength_q + " bits.");
+            BigInteger[] rsa_params = new BigInteger[2];
+            rsa_params[0] = some_q;
+            rsa_params[1] = some_p;
+
+            return rsa_params;
+        }
+
+        private void getPrimes(int key_size)
+        {
+            // Random rand = new Random();
+            int bitLength_q = 0;
+            int bitLength_p = 0;
+
+            int size_q = 128;
+            int size_p = 129;
+            do
+            {
+                bitLength_q = 0;
+                bitLength_p = 0;
+
+                this.priKey.Q = genPrimes(size_q);
+                this.priKey.P = genPrimes(size_p);
+
+                BigInteger test_q = this.priKey.Q;
+                BigInteger test_p = this.priKey.P;
+
+                while (test_q / 2 != 0)
+                {
+                    test_q /= 2;
+                    bitLength_q++;
+                }
+                bitLength_q += 1;
+
+                while (test_p / 2 != 0)
+                {
+                    test_p /= 2;
+                    bitLength_p++;
+                }
+                bitLength_p += 1;
+
+            } while ((bitLength_p + bitLength_q) != 2048);
         }
 
         void genKeys()
@@ -162,19 +241,14 @@ namespace Cryptography_101
             return BigInteger.ModPow(cryptogram, this.priKey.D, this.pubKey.N);
         }
 
-        public BigInteger sign(BigInteger message)
+        public BigInteger sign(BigInteger hash_message)
         {
             // This is basically a RSA decryption
             //return decrypt(BigInteger.Parse("0" + MathHelper.GetHashString(message.ToString())));
-            String hash = "0" + MathHelper
-                .GetHashString(message.ToString());
-
-            Console.WriteLine("Message Hash is : " + hash);
-
-            return BigInteger.ModPow((BigInteger
-                .Parse(hash, 
-                System.Globalization.NumberStyles.AllowHexSpecifier
-               )), this.priKey.D, this.pubKey.N);
+            
+            Console.WriteLine("Message to be signed is: " + hash_message);
+            
+            return BigInteger.ModPow(hash_message, this.priKey.D, this.pubKey.N);
         }
 
         public bool verify_sign(BigInteger signature, BigInteger cryptogram, BigInteger public_key_e, BigInteger private_key_d, BigInteger modulo, BigInteger orig_msg)
@@ -182,23 +256,16 @@ namespace Cryptography_101
             // This is basically a RSA encryption
             // A message decryption has to be done
             BigInteger message = BigInteger.ModPow(cryptogram, private_key_d, modulo);
-            String message_hash = "0" + MathHelper.GetHashString(message.ToString().ToLower());
-            BigInteger hashed_message = BigInteger.Parse(message_hash,
-                System.Globalization.NumberStyles.AllowHexSpecifier);
-            Console.WriteLine("Message from cryptogram is: " + message);
-            Console.WriteLine("Message is actually: " + orig_msg);
-            Console.WriteLine("The Decryption Process is: " + message.Equals(orig_msg));
-            Console.WriteLine("Message digest after decryption: " + hashed_message);
-            Console.WriteLine("Message digest alt: " + message_hash);
-
+            String message_hash = MathHelper.GetHashString(message.ToString());
+            
             BigInteger pseudo_encryption = BigInteger.ModPow(signature, public_key_e, modulo);
-            String stringif = "0" + MathHelper.GetHashString(pseudo_encryption.ToString().ToLower());
-            Console.WriteLine("Signature digest after \"encryption\" is: " + stringif);
-            BigInteger signature_candidate = BigInteger.Parse(stringif, 
-                System.Globalization.NumberStyles.AllowHexSpecifier);
-            Console.WriteLine("Signature candidate: " + signature_candidate);
 
-            return hashed_message.Equals(signature_candidate);
+            return BigInteger.Parse("0" + message_hash, System.Globalization.NumberStyles.AllowHexSpecifier) 
+                == pseudo_encryption;
+        }
+
+        public void storePublicKey(PublicKey pku) {
+
         }
     }
 }

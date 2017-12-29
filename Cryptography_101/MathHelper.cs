@@ -14,7 +14,7 @@ namespace Cryptography_101
 
         public static byte[] GetHash(string inputString)
         {
-            HashAlgorithm alg = SHA256.Create();
+            HashAlgorithm alg = SHA1.Create();
             return alg.ComputeHash(Encoding.Unicode.GetBytes(inputString));
         }
 
@@ -32,7 +32,7 @@ namespace Cryptography_101
             PrimalityTest primalityTest = new PrimalityTest();
             byte[] numbers = new byte[length];
             rand.NextBytes(numbers);
-            
+
             BigInteger number = new BigInteger(numbers);
             int iterations = 400;
 
@@ -82,6 +82,24 @@ namespace Cryptography_101
             v %= n;
             if (v < 0) v = (v + n) % n;
             return v;
+        }
+
+        public static int computeBitLength(BigInteger a) {
+            int bit_length = 0;
+
+            while (BigInteger.Divide(a, 2) != 0)
+            {
+                a = BigInteger.Divide(a, 2);
+                bit_length++;
+            }
+            bit_length += 1;
+
+            return bit_length;
+        }
+
+        public static int computeFloorByteLength(BigInteger a)
+        {
+            return computeBitLength(a) / 8;
         }
     }
 }
